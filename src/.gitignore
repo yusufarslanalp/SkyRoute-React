@@ -5,7 +5,7 @@ node_modules/
 build/
 
 # Dependency directories
-jspm_packages/
+jspm_packages/git sta
 
 # Typescript v1 declaration files
 typings/
