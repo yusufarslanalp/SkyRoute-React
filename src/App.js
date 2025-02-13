@@ -28,8 +28,7 @@ const App = () => {
               <Route path="/page3" element={<Page3 />} />
             </Routes>
             
-            {/* Default Content */}
-            <div>Page Content (Hello From Page Content)</div>
+
           </div>
         </div>
       </div>
