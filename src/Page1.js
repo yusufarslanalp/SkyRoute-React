@@ -4,30 +4,32 @@ import axios from 'axios';
 const Page1 = () => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [products, setProducts] = useState([]); // State to hold the list of products
-  const [expandedProductId, setExpandedProductId] = useState(null); // To track expanded product
+  const [flightRoutes, setFlightRoutes] = useState([]); // Add this line to define flightRoutes state
+  const [expandedFlightRouteId, setExpandedFlightRouteId] = useState(null); // To track expanded flight route
 
   const handleSearch = () => {
     console.log(`Searching for routes from ${origin} to ${destination}`);
     axios
-      .get('http://localhost:8081/product')  // Replace with your API URL
+      .get('http://localhost:8080/route')  // Replace with your API URL
       .then((response) => {
-        console.log('Response from server:', response.data);
-        setProducts(response.data);  // Assuming the response is a list of products
+        //console.log('Response from server:', response.data);
+        const flightRoutes = response.data;
+        console.log(flightRoutes);
+        setFlightRoutes(flightRoutes); // Update flightRoutes with the data from the API
       })
       .catch((error) => {
         console.error('There was an error making the request!', error);
       });
   };
 
-  const handleProductClick = (productId) => {
-    // Toggle expanded state for product
-    setExpandedProductId((prev) => (prev === productId ? null : productId));
+  const handleFlightRouteClick = (flightRouteId) => {
+    // Toggle expanded state for flight route
+    setExpandedFlightRouteId((prev) => (prev === flightRouteId ? null : flightRouteId));
   };
 
   return (
     <div style={{ margin: '20px' }}>
-      <h3>Search for Title</h3>
+      <h3>Search for Routes</h3>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
         <label htmlFor="origin" style={{ marginRight: '10px' }}>
           Origin
@@ -72,46 +74,66 @@ const Page1 = () => {
           Search
         </button>
       </div>
-
       <div style={{ marginTop: '20px' }}>
-        <h4>Product List</h4>
-        {products.length > 0 ? (
-          products.map((product) => (
-            <div key={product.id} style={{ marginBottom: '10px' }}>
-              <div
-                onClick={() => handleProductClick(product.id)}
-                style={{
-                  padding: '10px',
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  backgroundColor: '#f9f9f9',
-                }}
-              >
-                {product.name}  {/* Displaying product name */}
-              </div>
-
-              {/* Show product details if the product is expanded */}
-              {expandedProductId === product.id && (
+        <h4>Flight Routes</h4>
+        {flightRoutes.length > 0 ? (
+          flightRoutes.map((flightRoute, index) => (
+            Array.isArray(flightRoute) && flightRoute.length > 0 ? (
+              <div key={flightRoute[0].id} style={{ marginBottom: '10px' }}>
+                {/* Display the first transportation's 'from' location */}
                 <div
+                  onClick={() => handleFlightRouteClick(flightRoute[0].id)}
                   style={{
-                    marginTop: '10px',
                     padding: '10px',
-                    backgroundColor: '#f1f1f1',
                     border: '1px solid #ddd',
                     borderRadius: '5px',
+                    cursor: 'pointer',
+                    backgroundColor: '#f9f9f9',
                   }}
                 >
-                  <strong>Product Details:</strong>
-                  <p>Here some product detail.</p>  {/* Placeholder for product details */}
+                  {flightRoute[0].from.name}  {/* Displaying 'from' name of the first transportation */}
                 </div>
-              )}
-            </div>
+
+                {/* Show flight route details if expanded */}
+                {expandedFlightRouteId === flightRoute[0].id && (
+                  <div
+                    style={{
+                      marginTop: '10px',
+                      padding: '10px',
+                      backgroundColor: '#f1f1f1',
+                      border: '1px solid #ddd',
+                      borderRadius: '5px',
+                    }}
+                  >
+                    <strong>Flight Route Details:</strong>
+                    <p>O {flightRoute[0].from.name}</p>
+                    <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute[0].type}</p>
+                    <p>O {flightRoute[0].to.name}</p>
+
+                    {flightRoute.length > 1 && (
+                      <>
+                        <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute[1].type}</p>
+                        <p>O {flightRoute[1].to.name}</p>
+                      </>
+                    )}
+
+                    {flightRoute.length > 2 && (
+                      <>
+                        <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute[2].type}</p>
+                        <p>O {flightRoute[2].to.name}</p>
+                      </>
+                    )}
+                    
+                  </div>
+                )}
+              </div>
+            ) : null
           ))
         ) : (
-          <div>No products available</div>
+          <div>No flight routes available</div>
         )}
       </div>
+
     </div>
   );
 };
