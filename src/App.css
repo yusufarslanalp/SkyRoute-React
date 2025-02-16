@@ -29,9 +29,8 @@ a:hover {
 }
 
 
-/* Add this to center the title */
 .title {
   text-align: center;
-  margin-top: 50px; /* Optional: Adds space from the top of the page */
-  font-size: 2em;  /* Optional: Changes the font size */
+  margin-top: 50px;
+  font-size: 2em;
 }

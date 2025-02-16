@@ -4,26 +4,29 @@ import axios from 'axios';
 const Page1 = () => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [flightRoutes, setFlightRoutes] = useState([]); // Add this line to define flightRoutes state
-  const [expandedFlightRouteId, setExpandedFlightRouteId] = useState(null); // To track expanded flight route
+  const [flightRoutes, setFlightRoutes] = useState([]);
+  const [expandedFlightRouteId, setExpandedFlightRouteId] = useState(null);
 
   const handleSearch = () => {
     console.log(`Searching for routes from ${origin} to ${destination}`);
+    
+    const fromId = 3;
+    const toId = 7;
+  
     axios
-      .get('http://localhost:8080/route')  // Replace with your API URL
+      .get(`http://localhost:8080/route?fromId=${fromId}&toId=${toId}`)
       .then((response) => {
-        //console.log('Response from server:', response.data);
         const flightRoutes = response.data;
         console.log(flightRoutes);
-        setFlightRoutes(flightRoutes); // Update flightRoutes with the data from the API
+        setFlightRoutes(flightRoutes);
       })
       .catch((error) => {
         console.error('There was an error making the request!', error);
       });
   };
+  
 
   const handleFlightRouteClick = (flightRouteId) => {
-    // Toggle expanded state for flight route
     setExpandedFlightRouteId((prev) => (prev === flightRouteId ? null : flightRouteId));
   };
 
@@ -78,11 +81,10 @@ const Page1 = () => {
         <h4>Flight Routes</h4>
         {flightRoutes.length > 0 ? (
           flightRoutes.map((flightRoute, index) => (
-            Array.isArray(flightRoute) && flightRoute.length > 0 ? (
-              <div key={flightRoute[0].id} style={{ marginBottom: '10px' }}>
-                {/* Display the first transportation's 'from' location */}
+            Array.isArray(flightRoute.transportations) && flightRoute.transportations.length > 0 ? (
+              <div key={flightRoute.id} style={{ marginBottom: '10px' }}>
                 <div
-                  onClick={() => handleFlightRouteClick(flightRoute[0].id)}
+                  onClick={() => handleFlightRouteClick(flightRoute.id)}
                   style={{
                     padding: '10px',
                     border: '1px solid #ddd',
@@ -91,11 +93,10 @@ const Page1 = () => {
                     backgroundColor: '#f9f9f9',
                   }}
                 >
-                  {flightRoute[0].from.name}  {/* Displaying 'from' name of the first transportation */}
+                  {flightRoute.transportations[flightRoute.flightIndex].from.name}
                 </div>
 
-                {/* Show flight route details if expanded */}
-                {expandedFlightRouteId === flightRoute[0].id && (
+                {expandedFlightRouteId === flightRoute.id && (
                   <div
                     style={{
                       marginTop: '10px',
@@ -106,21 +107,21 @@ const Page1 = () => {
                     }}
                   >
                     <strong>Flight Route Details:</strong>
-                    <p>O {flightRoute[0].from.name}</p>
-                    <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute[0].type}</p>
-                    <p>O {flightRoute[0].to.name}</p>
+                    <p>O {flightRoute.transportations[0].from.name}</p>
+                    <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute.transportations[0].type}</p>
+                    <p>O {flightRoute.transportations[0].to.name}</p>
 
-                    {flightRoute.length > 1 && (
+                    {flightRoute.transportations.length > 1 && (
                       <>
-                        <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute[1].type}</p>
-                        <p>O {flightRoute[1].to.name}</p>
+                        <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute.transportations[1].type}</p>
+                        <p>O {flightRoute.transportations[1].to.name}</p>
                       </>
                     )}
 
-                    {flightRoute.length > 2 && (
+                    {flightRoute.transportations.length > 2 && (
                       <>
-                        <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute[2].type}</p>
-                        <p>O {flightRoute[2].to.name}</p>
+                        <p>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{flightRoute.transportations[2].type}</p>
+                        <p>O {flightRoute.transportations[2].to.name}</p>
                       </>
                     )}
                     
