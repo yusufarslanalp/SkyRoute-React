@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Page1 = () => {
@@ -6,25 +6,31 @@ const Page1 = () => {
   const [destination, setDestination] = useState('');
   const [flightRoutes, setFlightRoutes] = useState([]);
   const [expandedFlightRouteId, setExpandedFlightRouteId] = useState(null);
+  const [locations, setLocations] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get('http://localhost:8080/location')
+      .then((response) => {
+        setLocations(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching locations:', error);
+      });
+  }, []);
 
   const handleSearch = () => {
     console.log(`Searching for routes from ${origin} to ${destination}`);
     
-    const fromId = 3;
-    const toId = 7;
-  
     axios
-      .get(`http://localhost:8080/route?fromId=${fromId}&toId=${toId}`)
+      .get(`http://localhost:8080/route?fromId=${origin}&toId=${destination}`)
       .then((response) => {
-        const flightRoutes = response.data;
-        console.log(flightRoutes);
-        setFlightRoutes(flightRoutes);
+        setFlightRoutes(response.data);
       })
       .catch((error) => {
         console.error('There was an error making the request!', error);
       });
   };
-  
 
   const handleFlightRouteClick = (flightRouteId) => {
     setExpandedFlightRouteId((prev) => (prev === flightRouteId ? null : flightRouteId));
@@ -44,9 +50,11 @@ const Page1 = () => {
           style={{ padding: '5px', marginRight: '20px' }}
         >
           <option value="">Select Origin</option>
-          <option value="Location1">Location 1</option>
-          <option value="Location2">Location 2</option>
-          <option value="Location3">Location 3</option>
+          {locations.map((location) => (
+            <option key={location.id} value={location.id}>
+              {location.name}
+            </option>
+          ))}
         </select>
 
         <label htmlFor="destination" style={{ marginRight: '10px' }}>
@@ -59,9 +67,11 @@ const Page1 = () => {
           style={{ padding: '5px', marginRight: '20px' }}
         >
           <option value="">Select Destination</option>
-          <option value="LocationA">Location A</option>
-          <option value="LocationB">Location B</option>
-          <option value="LocationC">Location C</option>
+          {locations.map((location) => (
+            <option key={location.id} value={location.id}>
+              {location.name}
+            </option>
+          ))}
         </select>
 
         <button
@@ -77,10 +87,11 @@ const Page1 = () => {
           Search
         </button>
       </div>
+
       <div style={{ marginTop: '20px' }}>
         <h4>Flight Routes</h4>
         {flightRoutes.length > 0 ? (
-          flightRoutes.map((flightRoute, index) => (
+          flightRoutes.map((flightRoute) => (
             Array.isArray(flightRoute.transportations) && flightRoute.transportations.length > 0 ? (
               <div key={flightRoute.id} style={{ marginBottom: '10px' }}>
                 <div
