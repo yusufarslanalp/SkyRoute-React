@@ -6,13 +6,13 @@ const Navbar = () => {
     <nav>
       <ul style={{ listStyleType: 'none', padding: 0 }}>
         <li style={{ margin: '10px 0' }}>
-          <Link to="/page1">Page-1-link</Link>
+          <Link to="/routes-page">Routes</Link>
         </li>
         <li style={{ margin: '10px 0' }}>
-          <Link to="/page2">Page-2-link</Link>
+          <Link to="/locations">Locations</Link>
         </li>
         <li style={{ margin: '10px 0' }}>
-          <Link to="/page3">Page-3-link</Link>
+          <Link to="/transportations">Transportations</Link>
         </li>
       </ul>
     </nav>

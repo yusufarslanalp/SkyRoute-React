@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Page1 = () => {
+const RoutesPage = () => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [flightRoutes, setFlightRoutes] = useState([]);
@@ -150,4 +150,4 @@ const Page1 = () => {
   );
 };
 
-export default Page1;
+export default RoutesPage;
