@@ -10,18 +10,14 @@ const App = () => {
   return (
     <Router>
       <div>
-      <h1 className="title">Welcome To My App</h1>
+      <h1 className="title">Welcome To SkyRoute App</h1>
         
-        {/* Flex container for navbar and page content */}
         <div style={{ display: 'flex' }}>
-          {/* Navbar with 3/12 width */}
           <div style={{ width: '25%', padding: '10px' }}>
             <Navbar />
           </div>
           
-          {/* Page content with 9/12 width */}
           <div style={{ width: '75%', padding: '10px' }}>
-            {/* Routing Pages */}
             <Routes>
               <Route path="/page1" element={<Page1 />} />
               <Route path="/page2" element={<Page2 />} />
