@@ -136,7 +136,7 @@ const Transportations = () => {
             <th>From</th>
             <th>To</th>
             <th>Type</th>
-            <th>Actions</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

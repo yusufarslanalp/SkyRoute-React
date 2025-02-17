@@ -2,26 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Locations = () => {
-  // State variables to store form inputs and fetched locations
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
   const [city, setCity] = useState('');
   const [locationCode, setLocationCode] = useState('');
-  const [locations, setLocations] = useState([]); // Stores fetched locations
+  const [locations, setLocations] = useState([]);
 
-  // Fetch locations when the page loads
   useEffect(() => {
     axios
       .get('http://localhost:8080/location')
       .then((response) => {
-        setLocations(response.data); // Set locations into state
+        setLocations(response.data);
       })
       .catch((error) => {
         console.error('Error fetching locations:', error);
       });
   }, []);
 
-  // Handle form submission (Create button click)
   const handleCreate = () => {
     const newLocation = {
       name,
@@ -34,7 +31,7 @@ const Locations = () => {
       .post('http://localhost:8080/location', newLocation)
       .then((response) => {
         console.log('Location created successfully:', response.data);
-        setLocations([...locations, response.data]); // Add newly created location to the list
+        setLocations([...locations, response.data]);
         setName('');
         setCountry('');
         setCity('');
@@ -45,13 +42,10 @@ const Locations = () => {
       });
   };
 
-  // Handle edit button (placeholder function)
   const handleEdit = (id) => {
     console.log(`Edit location with ID: ${id}`);
-    // Implement your edit logic here (e.g., open a modal or fill form with data)
   };
 
-  // Handle delete button
   const handleDelete = (id) => {
     axios
       .delete(`http://localhost:8080/location/${id}`)
@@ -68,7 +62,6 @@ const Locations = () => {
     <div style={{ margin: '20px' }}>
       <h3>Create New Location</h3>
 
-      {/* First Row (Name & Country) */}
       <div style={{ display: 'flex', marginBottom: '20px' }}>
         <div style={{ marginRight: '20px', width: '200px' }}>
           <label htmlFor="name" style={{ display: 'block', width: '100%' }}>Name:</label>
@@ -93,7 +86,6 @@ const Locations = () => {
         </div>
       </div>
 
-      {/* Second Row (City & Location Code) */}
       <div style={{ display: 'flex', marginBottom: '20px' }}>
         <div style={{ marginRight: '20px', width: '200px' }}>
           <label htmlFor="city" style={{ display: 'block', width: '100%' }}>City:</label>
@@ -118,7 +110,6 @@ const Locations = () => {
         </div>
       </div>
 
-      {/* Create Button */}
       <button
         onClick={handleCreate}
         style={{
@@ -132,7 +123,6 @@ const Locations = () => {
         Create
       </button>
 
-      {/* Locations Table */}
       <h3 style={{ marginTop: '40px' }}>Existing Locations</h3>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
         <thead>
@@ -142,7 +132,7 @@ const Locations = () => {
             <th>City</th>
             <th>Country</th>
             <th>Location Code</th>
-            <th>Actions</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

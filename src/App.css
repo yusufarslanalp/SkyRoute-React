@@ -34,3 +34,26 @@ a:hover {
   margin-top: 50px;
   font-size: 2em;
 }
+
+table {
+  width: 100%;
+  max-width: 800px;
+  border-collapse: collapse;
+}
+
+table td:last-child {
+  width: 170px; 
+  text-align: center; 
+}
+
+table th {
+  text-align: left;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: white;
+}
+
+table tbody tr:nth-child(odd) {
+  background-color: #d0e0f0;
+}

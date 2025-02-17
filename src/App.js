@@ -13,17 +13,23 @@ const App = () => {
       <h1 className="title">Welcome To SkyRoute App</h1>
         
         <div style={{ display: 'flex' }}>
-          <div style={{ width: '25%', padding: '10px' }}>
+          <div style={{ width: '5%', padding: '10px' }}>
+
+          </div>
+
+          <div style={{ width: '10%', padding: '10px' }}>
             <Navbar />
           </div>
           
-          <div style={{ width: '75%', padding: '10px' }}>
+          <div style={{ width: '80%', padding: '10px' }}>
             <Routes>
               <Route path="/routes-page" element={<RoutesPage />} />
               <Route path="/locations" element={<Locations />} />
               <Route path="/transportations" element={<Transportations />} />
             </Routes>
-            
+          </div>
+
+          <div style={{ width: '5%', padding: '10px' }}>
 
           </div>
         </div>
