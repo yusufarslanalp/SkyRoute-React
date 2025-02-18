@@ -94,7 +94,7 @@ const RoutesPage = () => {
         {flightRoutes.length > 0 ? (
           flightRoutes.map((flightRoute) => (
             Array.isArray(flightRoute.transportations) && flightRoute.transportations.length > 0 ? (
-              <div key={flightRoute.id} style={{ marginBottom: '10px' }}>
+              <div key={flightRoute.id} style={{ marginBottom: '10px', width: '800px' }}>
                 <div
                   onClick={() => handleFlightRouteClick(flightRoute.id)}
                   style={{
@@ -105,7 +105,7 @@ const RoutesPage = () => {
                     backgroundColor: '#f9f9f9',
                   }}
                 >
-                  {flightRoute.transportations[flightRoute.flightIndex].from.name}
+                  {flightRoute.transportations[flightRoute.flightIndex].from.name} &nbsp;&nbsp;&nbsp; {flightRoute.transportations[flightRoute.flightIndex].from.locationCode}
                 </div>
 
                 {expandedFlightRouteId === flightRoute.id && (
