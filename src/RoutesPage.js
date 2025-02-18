@@ -29,6 +29,7 @@ const RoutesPage = () => {
       })
       .catch((error) => {
         console.error('There was an error making the request!', error);
+        setFlightRoutes([]);
       });
   };
 

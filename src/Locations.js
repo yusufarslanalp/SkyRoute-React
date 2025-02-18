@@ -7,6 +7,8 @@ const Locations = () => {
   const [city, setCity] = useState('');
   const [locationCode, setLocationCode] = useState('');
   const [locations, setLocations] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   useEffect(() => {
     axios
@@ -43,7 +45,13 @@ const Locations = () => {
   };
 
   const handleEdit = (id) => {
-    console.log(`Edit location with ID: ${id}`);
+    const locationToEdit = locations.find((location) => location.id === id);
+    setSelectedLocation(locationToEdit);
+    setName(locationToEdit.name);
+    setCountry(locationToEdit.country);
+    setCity(locationToEdit.city);
+    setLocationCode(locationToEdit.locationCode);
+    setIsModalOpen(true);
   };
 
   const handleDelete = (id) => {
@@ -51,11 +59,45 @@ const Locations = () => {
       .delete(`http://localhost:8080/location/${id}`)
       .then((response) => {
         console.log('Location deleted:', response.data);
-        setLocations(locations.filter((location) => location.id !== id)); // Remove deleted location from the list
+        setLocations(locations.filter((location) => location.id !== id));
       })
       .catch((error) => {
         console.error('Error deleting location:', error);
       });
+  };
+
+  const handleUpdate = () => {
+    const updatedLocation = {
+      id: selectedLocation.id,
+      name,
+      country,
+      city,
+      locationCode,
+    };
+
+    axios
+      .put('http://localhost:8080/location', updatedLocation)
+      .then((response) => {
+        console.log('Location updated successfully:', response.data);
+        setLocations(
+          locations.map((location) =>
+            location.id === selectedLocation.id ? response.data : location
+          )
+        );
+        closeModal();
+      })
+      .catch((error) => {
+        console.error('Error updating location:', error);
+      });
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedLocation(null);
+    setName('');
+    setCountry('');
+    setCity('');
+    setLocationCode('');
   };
 
   return (
@@ -64,7 +106,9 @@ const Locations = () => {
 
       <div style={{ display: 'flex', marginBottom: '20px' }}>
         <div style={{ marginRight: '20px', width: '200px' }}>
-          <label htmlFor="name" style={{ display: 'block', width: '100%' }}>Name:</label>
+          <label htmlFor="name" style={{ display: 'block', width: '100%' }}>
+            Name:
+          </label>
           <input
             type="text"
             id="name"
@@ -75,7 +119,9 @@ const Locations = () => {
         </div>
 
         <div style={{ width: '200px' }}>
-          <label htmlFor="country" style={{ display: 'block', width: '100%' }}>Country:</label>
+          <label htmlFor="country" style={{ display: 'block', width: '100%' }}>
+            Country:
+          </label>
           <input
             type="text"
             id="country"
@@ -88,7 +134,9 @@ const Locations = () => {
 
       <div style={{ display: 'flex', marginBottom: '20px' }}>
         <div style={{ marginRight: '20px', width: '200px' }}>
-          <label htmlFor="city" style={{ display: 'block', width: '100%' }}>City:</label>
+          <label htmlFor="city" style={{ display: 'block', width: '100%' }}>
+            City:
+          </label>
           <input
             type="text"
             id="city"
@@ -99,7 +147,9 @@ const Locations = () => {
         </div>
 
         <div style={{ width: '200px' }}>
-          <label htmlFor="locationCode" style={{ display: 'block', width: '100%' }}>Location Code:</label>
+          <label htmlFor="locationCode" style={{ display: 'block', width: '100%' }}>
+            Location Code:
+          </label>
           <input
             type="text"
             id="locationCode"
@@ -161,6 +211,102 @@ const Locations = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '20px',
+              borderRadius: '5px',
+              minWidth: '300px',
+              textAlign: 'center',
+            }}
+          >
+            <h3>Edit Location</h3>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label htmlFor="modalName">Name:</label>
+              <input
+                type="text"
+                id="modalName"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{ padding: '5px', width: '100%' }}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label htmlFor="modalCountry">Country:</label>
+              <input
+                type="text"
+                id="modalCountry"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                style={{ padding: '5px', width: '100%' }}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label htmlFor="modalCity">City:</label>
+              <input
+                type="text"
+                id="modalCity"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                style={{ padding: '5px', width: '100%' }}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label htmlFor="modalLocationCode">Location Code:</label>
+              <input
+                type="text"
+                id="modalLocationCode"
+                value={locationCode}
+                onChange={(e) => setLocationCode(e.target.value)}
+                style={{ padding: '5px', width: '100%' }}
+              />
+            </div>
+
+            <button
+              onClick={handleUpdate}
+              style={{
+                padding: '5px 15px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+                marginRight: '10px',
+              }}
+            >
+              Update
+            </button>
+            <button
+              onClick={closeModal}
+              style={{
+                padding: '5px 15px',
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

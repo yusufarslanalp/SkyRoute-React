@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Transportations = () => {
   const [locations, setLocations] = useState([]);
@@ -6,65 +7,62 @@ const Transportations = () => {
   const [toId, setToId] = useState(null);
   const [type, setType] = useState('');
   const [transportations, setTransportations] = useState([]);
+  
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTransportation, setEditTransportation] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/location')
-      .then((response) => response.json())
-      .then((data) => setLocations(data))
+    axios.get('http://localhost:8080/location')
+      .then((response) => setLocations(response.data))
       .catch((error) => console.error('Error fetching locations:', error));
 
-    fetch('http://localhost:8080/transportation')
-      .then((response) => response.json())
-      .then((data) => setTransportations(data))
+    axios.get('http://localhost:8080/transportation')
+      .then((response) => setTransportations(response.data))
       .catch((error) => console.error('Error fetching transportations:', error));
   }, []);
 
   const handleCreate = () => {
-    const transportationData = {
-      fromId,
-      toId,
-      type,
-    };
-
-    fetch('http://localhost:8080/transportation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(transportationData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Transportation created successfully:', data);
-        setTransportations([...transportations, data]);
+    const transportationData = { fromId, toId, type };
+    axios.post('http://localhost:8080/transportation', transportationData)
+      .then((response) => {
+        setTransportations([...transportations, response.data]);
       })
       .catch((error) => console.error('Error creating transportation:', error));
   };
 
   const handleEdit = (id) => {
-    console.log(`Edit transportation with ID: ${id}`);
+    const transportationToEdit = transportations.find((t) => t.id === id);
+    setEditTransportation(transportationToEdit);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdate = () => {
+    const updatedData = { type };
+    axios.put(`http://localhost:8080/transportation/${editTransportation.id}`, updatedData)
+      .then((response) => {
+        setTransportations(transportations.map((t) => t.id === response.data.id ? { ...t, ...response.data } : t));
+        setIsEditModalOpen(false);
+      })
+      .catch((error) => console.error('Error updating transportation:', error));
+  };
+
+  const handleCancel = () => {
+    setIsEditModalOpen(false);
   };
 
   const handleDelete = (id) => {
-    fetch(`http://localhost:8080/transportation/${id}`, {
-      method: 'DELETE',
-    })
-      .then((response) => {
-        console.log('Transportation deleted:', response.data);
+    axios.delete(`http://localhost:8080/transportation/${id}`)
+      .then(() => {
         setTransportations(transportations.filter((transportation) => transportation.id !== id));
       })
-      .catch((error) => {
-        console.error('Error deleting transportation:', error);
-      });
+      .catch((error) => console.error('Error deleting transportation:', error));
   };
 
   return (
     <div style={{ margin: '20px' }}>
       <h3>Transportation Creation</h3>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-        <label htmlFor="from" style={{ marginRight: '10px' }}>
-          From
-        </label>
+        <label htmlFor="from" style={{ marginRight: '10px' }}>From</label>
         <select
           id="from"
           value={fromId || ''}
@@ -73,15 +71,11 @@ const Transportations = () => {
         >
           <option value="">Select Location</option>
           {locations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
+            <option key={location.id} value={location.id}>{location.name}</option>
           ))}
         </select>
 
-        <label htmlFor="to" style={{ marginRight: '10px' }}>
-          To
-        </label>
+        <label htmlFor="to" style={{ marginRight: '10px' }}>To</label>
         <select
           id="to"
           value={toId || ''}
@@ -90,15 +84,11 @@ const Transportations = () => {
         >
           <option value="">Select Location</option>
           {locations.map((location) => (
-            <option key={location.id} value={location.id}>
-              {location.name}
-            </option>
+            <option key={location.id} value={location.id}>{location.name}</option>
           ))}
         </select>
 
-        <label htmlFor="type" style={{ marginRight: '10px' }}>
-          Type
-        </label>
+        <label htmlFor="type" style={{ marginRight: '10px' }}>Type</label>
         <select
           id="type"
           value={type}
@@ -164,6 +154,61 @@ const Transportations = () => {
           ))}
         </tbody>
       </table>
+
+      {isEditModalOpen && (
+        <div style={{ position: 'fixed', top: '0', left: '0', right: '0', bottom: '0', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '5px' }}>
+            <h3>Edit Transportation</h3>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <label htmlFor="from">From</label>
+              <input
+                id="from"
+                value={editTransportation ? editTransportation.from.name : ''}
+                readOnly
+                style={{ padding: '5px', marginBottom: '10px', backgroundColor: '#f0f0f0' }}
+              />
+
+              <label htmlFor="to">To</label>
+              <input
+                id="to"
+                value={editTransportation ? editTransportation.to.name : ''}
+                readOnly
+                style={{ padding: '5px', marginBottom: '10px', backgroundColor: '#f0f0f0' }}
+              />
+
+              <label htmlFor="type">Type</label>
+              <select
+                id="type"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                style={{ padding: '5px', marginBottom: '20px' }}
+              >
+                <option value="">Select Type</option>
+                <option value="FLIGHT">Flight</option>
+                <option value="BUS">Bus</option>
+                <option value="SUBWAY">Subway</option>
+                <option value="UBER">Uber</option>
+              </select>
+
+              <div>
+                <button
+                  onClick={handleUpdate}
+                  style={{ padding: '5px 15px', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}
+                >
+                  Update
+                </button>
+                <button
+                  onClick={handleCancel}
+                  style={{ padding: '5px 15px', marginLeft: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
